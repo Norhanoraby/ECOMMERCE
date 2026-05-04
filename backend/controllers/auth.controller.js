@@ -50,7 +50,7 @@ try {
   res.status(201).json( { id: user._id, name: user.name, email: user.email ,role: user.role});
 } catch (error) {  
   console.error("Signup error:", error.message);
-  res.status(500).json({ message: "Server error", error: error.message });
+  res.status(500).json({ message: error.message });
 }
 };
 export const login = async (req, res) => {
@@ -86,7 +86,7 @@ export const logout = async (req, res) => {
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
     console.error("Logout error:", error.message);
-    res.status(500).json({ message: "Server error", error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -117,9 +117,14 @@ export const refreshToken = async (req, res) => {
 
   } catch (error) {   
      console.error("Refresh token error:", error.message);
-    res.status(500).json({ message: "Server error", error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };   
 
-//TODO: implement get profile LATER
-//export const getProfile = async (req, res) => {
+export const getProfile = async (req, res) => {
+  try {
+    res.json(req.user);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
