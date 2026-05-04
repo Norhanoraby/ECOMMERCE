@@ -30,6 +30,7 @@ const SignUpPage = () => {
     <div className="flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 bg-[#F8F5F2]">
       <motion.div
         className="sm:mx-auto sm:w-full sm:max-w-md"
+        className="sm:mx-auto sm:w-full sm:max-w-md"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}

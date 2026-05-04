@@ -2,16 +2,19 @@ import React from 'react'
 import { ShoppingCart, UserPlus, LogIn, LogOut, Lock } from "lucide-react";
 import { Link } from "react-router-dom"; 
 import { useUserStore } from '../stores/useUserStore';
+import { useNavigate } from "react-router-dom";
+
 const Navbar = () => {
     const { user, logOut } = useUserStore();
     const isAdmin =user?.role === "admin";
+    const navigate = useNavigate();
 
   return (
 <header className="fixed top-0 left-0 w-full bg-[#F8F5F2] border-b border-[#E5E0DA] z-40">
   <div className="container mx-auto px-6 py-4 flex justify-between items-center">
     
     <Link to="/" className="text-2xl font-bold tracking-wide text-[#1A1A1A]">
-      E-Commerce
+      MAISON ZCNF
     </Link>
 
     <nav className="flex items-center gap-6">
@@ -24,7 +27,7 @@ const Navbar = () => {
           <ShoppingCart className="inline-block mr-1" size={20} />
           Cart
           <span className="absolute -top-3 -left-3 bg-black text-white rounded-full px-2 py-0.5 text-xs">
-            3
+            0
           </span>
         </Link>
       )}
@@ -39,12 +42,15 @@ const Navbar = () => {
       )}
 
       {user ? (
-        <button
-          onClick={logOut}
-          className="bg-black text-white px-5 py-2 font-semibold hover:bg-gray-800 transition"
-        >
-          Log Out
-        </button>
+       <button
+        onClick={async () => {
+        await logOut();
+        navigate("/");
+       }}
+        className="bg-black text-white px-5 py-2 font-semibold hover:bg-gray-800 transition"
+    >
+       Log Out
+      </button>
       ) : (
         <>
           <Link
