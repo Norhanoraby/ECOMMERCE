@@ -6,7 +6,7 @@ import Navbar from "./components/Navbar";
 function App() {
 
   return (
-   <div className="min-h-screen bg-gray-900 text-white relative overflow-hidden">
+   <div className="min-h-screen bg-[#F8F5F2] text-[#1A1A1A] ">
    {/* Background gradient */}
 			<div className='absolute inset-0 overflow-hidden'>
 				<div className='absolute inset-0'>
