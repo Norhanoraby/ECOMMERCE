@@ -1,6 +1,9 @@
 import Coupon from "../models/coupon.model.js";
 import Order from "../models/order.model.js";
 import { stripe } from "../lib/stripe.js";
+
+
+
 export const createCheckoutSession = async (req, res) => {
 	try {
 		const { products, couponCode } = req.body;
@@ -62,9 +65,9 @@ export const createCheckoutSession = async (req, res) => {
 			},
 		});
 
-		if (totalAmount >= 20000) {
+		/*if (totalAmount >= 20000) {
 			await createNewCoupon(req.user._id);
-		}
+		}*/
 		//res.status(200).json({ id: session.id, totalAmount: totalAmount / 100 });
 	    res.status(200).json({
  			 id: session.id,
@@ -75,6 +78,21 @@ export const createCheckoutSession = async (req, res) => {
 		res.status(500).json({ message: "Error processing checkout", error: error.message });
 	}
 };
+
+async function createNewCoupon(userId) {
+	await Coupon.findOneAndDelete({ userId });
+
+	const newCoupon = new Coupon({
+		code: "GIFT" + Math.random().toString(36).substring(2, 8).toUpperCase(),
+		discountPercentage: 10,
+		expirationDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+		userId: userId,
+	});
+
+	await newCoupon.save();
+
+	return newCoupon;
+}
 
 export const checkoutSuccess = async (req, res) => {
 	try {
@@ -108,6 +126,9 @@ export const checkoutSuccess = async (req, res) => {
 			});
 
 			await newOrder.save();
+			if (session.amount_total >= 20000 ) {
+  			await createNewCoupon(session.metadata.userId);
+			}
 
 			res.status(200).json({
 				success: true,
@@ -128,19 +149,4 @@ async function createStripeCoupon(discountPercentage) {
 	});
 
 	return coupon.id;
-}
-
-async function createNewCoupon(userId) {
-	await Coupon.findOneAndDelete({ userId });
-
-	const newCoupon = new Coupon({
-		code: "GIFT" + Math.random().toString(36).substring(2, 8).toUpperCase(),
-		discountPercentage: 10,
-		expirationDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
-		userId: userId,
-	});
-
-	await newCoupon.save();
-
-	return newCoupon;
 }

@@ -3,10 +3,12 @@ import { ShoppingCart, UserPlus, LogIn, LogOut, Lock } from "lucide-react";
 import { Link } from "react-router-dom"; 
 import { useUserStore } from '../stores/useUserStore';
 import { useNavigate } from "react-router-dom";
+import { useCartStore } from '../stores/useCartStore';
 
 const Navbar = () => {
     const { user, logOut } = useUserStore();
     const isAdmin =user?.role === "admin";
+    const { cart } = useCartStore();
     const navigate = useNavigate();
 
   return (
@@ -27,7 +29,7 @@ const Navbar = () => {
           <ShoppingCart className="inline-block mr-1" size={20} />
           Cart
           <span className="absolute -top-3 -left-3 bg-black text-white rounded-full px-2 py-0.5 text-xs">
-            0
+            {cart.length}
           </span>
         </Link>
       )}
@@ -36,8 +38,11 @@ const Navbar = () => {
         <Link
           to="/secret-dashboard"
           className="border border-black text-black px-4 py-2 font-semibold hover:bg-black hover:text-white transition"
+          to={"/secret-dashboard"}
         >
-          Dashboard
+          <lock className="inline-block mr-1" size={18} />
+          <span className="hidden sm:inline">Dashboard</span>
+          
         </Link>
       )}
 
