@@ -8,7 +8,7 @@ import { useCartStore } from '../stores/useCartStore';
 const Navbar = () => {
     const { user, logOut } = useUserStore();
     const isAdmin =user?.role === "admin";
-    const { cart } = useCartStore();
+    const { cart, clearCart} = useCartStore();
     const navigate = useNavigate();
 
   return (
@@ -24,13 +24,15 @@ const Navbar = () => {
         Home
       </Link>
 
-      {user && (
+      {user &&  (
         <Link to="/cart" className="relative text-[#6B6B6B] hover:text-black font-medium">
           <ShoppingCart className="inline-block mr-1" size={20} />
           Cart
-          <span className="absolute -top-3 -left-3 bg-black text-white rounded-full px-2 py-0.5 text-xs">
-            {cart.length}
-          </span>
+          {cart.length > 0 && (
+            <span className="absolute -top-3 -left-3 bg-black text-white rounded-full px-2 py-0.5 text-xs">
+              {cart.length}
+            </span>
+          )}
         </Link>
       )}
 

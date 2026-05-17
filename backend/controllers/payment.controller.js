@@ -4,6 +4,9 @@ import { stripe } from "../lib/stripe.js";
 
 
 
+
+
+
 export const createCheckoutSession = async (req, res) => {
 	try {
 		const { products, couponCode } = req.body;
@@ -66,8 +69,10 @@ export const createCheckoutSession = async (req, res) => {
 		});
 
 		/*if (totalAmount >= 20000) {
+		/*if (totalAmount >= 20000) {
 			await createNewCoupon(req.user._id);
 		}*/
+		
 		//res.status(200).json({ id: session.id, totalAmount: totalAmount / 100 });
 	    res.status(200).json({
  			 id: session.id,
@@ -126,6 +131,9 @@ export const checkoutSuccess = async (req, res) => {
 			});
 
 			await newOrder.save();
+			if (session.amount_total >= 20000 ) {
+  			await createNewCoupon(session.metadata.userId);
+			}
 			if (session.amount_total >= 20000 ) {
   			await createNewCoupon(session.metadata.userId);
 			}

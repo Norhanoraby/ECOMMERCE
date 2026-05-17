@@ -4,26 +4,36 @@ import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
 import AdminPage from "./pages/AdminPage";
 import CategoryPage from "./pages/CategoryPage";
+import CartPage from "./pages/CartPage";
 
 import Navbar from "./components/Navbar";
 import { Toaster } from "react-hot-toast";
 import { useUserStore } from "./stores/useUserStore";
-import { useEffect } from "react";
+import { use, useEffect } from "react";
+import { useCartStore } from "./stores/useCartStore";
 
 
 function App() {
   const{user,checkAuth,checkingAuth} = useUserStore();
-
+  const {getCartItems,clearCart} = useCartStore();
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
+
+  useEffect(() => {
+    if (user) {
+     getCartItems();
+    } else {
+     clearCart();
+  }
+}, [user, getCartItems, clearCart]);
 
 if (checkingAuth) {
   return <div>Loading...</div>;
 }
 
   return (
-   <div className="min-h-screen bg-[#F8F5F2] text-[#1A1A1A] ">
+   <div className=" relative min-h-screen bg-[#F8F5F2] text-[#1A1A1A] ">
    {/* Background gradient */}
 			<div className='absolute inset-0 overflow-hidden'>
 				<div className='absolute inset-0'>
@@ -39,14 +49,14 @@ if (checkingAuth) {
     <Route path='/login' element={!user ? <LoginPage /> : <Navigate to="/" />} />
     <Route path='/secret-dashboard' 
     element={user?.role === 'admin' ? <AdminPage /> : <Navigate to="/" />} />
-   <Route path='/category/:category' 
-    element={<CategoryPage/>}
-    />
+    <Route path='/category/:category' element={<CategoryPage/>}/>
+    <Route path='/cart' element={user ? <CartPage/> : <Navigate to="/login" />} />
+  
+
    </Routes>
    </div>
    <Toaster/>
    </div>
   )
 }
-
 export default App;
