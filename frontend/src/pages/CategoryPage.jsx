@@ -16,7 +16,7 @@ const CategoryPage = () => {
 	console.log("products:", products);
 	return (
 		<div className='min-h-screen bg-[#F8F5F2] text-[#1A1A1A]'>
-			<div className='relative z-10 max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 py-20'>
+			<div className='relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20'>
 				<motion.h1
 					className='text-center text-4xl sm:text-5xl font-bold text-[#1A1A1A] uppercase tracking-wide mb-4'
 					initial={{ opacity: 0, y: -20 }}
