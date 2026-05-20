@@ -5,7 +5,7 @@ import { ShoppingCart } from "lucide-react";
 import CartItem from "../components/CartItem";
 import PeopleAlsoBought from "../components/PeopleAlsoBought.jsx";
 import OrderSummary from "../components/OrderSummary";
-//import GiftCouponCard from "../components/GiftCouponCard";
+import GiftCouponCard from "../components/GiftCouponCard";
 
 const CartPage = () => {
 	const { cart } = useCartStore();
@@ -40,7 +40,7 @@ const CartPage = () => {
 							transition={{ duration: 0.5, delay: 0.4 }}
 						>
 							 <OrderSummary /> 
-							{/* <GiftCouponCard /> */}
+							{ <GiftCouponCard /> }
 						</motion.div>
 					)}
 				</div>
