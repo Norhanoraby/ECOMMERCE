@@ -1,5 +1,7 @@
-import React from 'react'
+import { useEffect } from "react";
 import CategoryItem from "../components/CategoryItem";
+import { useProductStore } from "../stores/useProductStore";
+import FeaturedProducts from "../components/FeaturedProducts";
 
 const categories = [
 	{ href: "/jeans", name: "Jeans", imageUrl: "/jeans.jpg" },
@@ -8,9 +10,14 @@ const categories = [
 	{ href: "/watches", name: "watches", imageUrl: "/watches.jpg" },
 	{ href: "/purse", name: "purse", imageUrl: "/purse1.jpg" },
 	{ href: "/dress", name: "dress", imageUrl: "/dress.jpg" },
-];
-
+  ];
 function HomePage() {
+	const { fetchFeaturedProducts, products, isloading } = useProductStore();
+
+    useEffect(() => {
+        fetchFeaturedProducts();
+    }, [fetchFeaturedProducts]);
+
   return (
   <div className="min-h-screen bg-[#F8F5F2] text-[#1A1A1A] px-6 py-20">
       <h1 className="text-3xl font-bold uppercase tracking-wide text-center">
@@ -25,6 +32,7 @@ function HomePage() {
 						<CategoryItem category={category} key={category.name} />
 					))}
 				</div>
+        {!isloading && products.length > 0 && <FeaturedProducts featuredProducts={products} />}
     </div>
   );
 };
