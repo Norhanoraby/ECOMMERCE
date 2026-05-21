@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useCartStore } from '../stores/useCartStore';
 
 const Navbar = () => {
-    const { user, logOut } = useUserStore();
+    const { user, logout } = useUserStore();
     const isAdmin =user?.role === "admin";
     const { cart, clearCart} = useCartStore();
     const navigate = useNavigate();
@@ -51,7 +51,7 @@ const Navbar = () => {
       {user ? (
        <button
         onClick={async () => {
-        await logOut();
+        await logout();
         navigate("/");
        }}
         className="bg-black text-white px-5 py-2 font-semibold hover:bg-gray-800 transition"
