@@ -79,15 +79,19 @@ else {
 
 export const removeAllFromCart = async (req, res) => {
   try {
-    const { productId } = req.body;
+    const { productId, selectedSize } = req.body;
     const user = req.user;
 
     if (!productId) {
       user.cartItems = [];
     } else {
       user.cartItems = user.cartItems.filter(
-        (item) => item.product.toString() !== productId
-      );
+  (item) =>
+    !(
+      item.product.toString() === productId &&
+      item.selectedSize === selectedSize
+    )
+);
     }
 
     await user.save();
@@ -100,12 +104,13 @@ export const removeAllFromCart = async (req, res) => {
 export const updateQuantity = async (req, res) => {
   try {
     const { id: productId } = req.params;
-    const { quantity } = req.body;
+    const { quantity, selectedSize } = req.body;
     const user = req.user;
 
     const existingItem = user.cartItems.find(
-      (item) => item.product.toString() === productId &&
-      item.selectedSize === selectedSize
+      (item) =>
+        item.product.toString() === productId &&
+        item.selectedSize === selectedSize
     );
 
     if (!existingItem) {
@@ -114,20 +119,25 @@ export const updateQuantity = async (req, res) => {
 
     if (quantity === 0) {
       user.cartItems = user.cartItems.filter(
-        (item) => item.product.toString() !== productId
+        (item) =>
+          !(
+            item.product.toString() === productId &&
+            item.selectedSize === selectedSize
+          )
       );
     } else {
       const product = await Product.findById(productId);
 
-const inventoryItem = product.inventory.find(
-  (item) => item.size === existingItem.selectedSize
-);
+      const inventoryItem = product.inventory.find(
+        (item) => item.size === selectedSize
+      );
 
-if (!inventoryItem || quantity > inventoryItem.quantity) {
-  return res.status(400).json({
-    message: `Only ${inventoryItem?.quantity || 0} available for this size`,
-  });
-}
+      if (!inventoryItem || quantity > inventoryItem.quantity) {
+        return res.status(400).json({
+          message: `Only ${inventoryItem?.quantity || 0} available for this size`,
+        });
+      }
+
       existingItem.quantity = quantity;
     }
 
@@ -135,6 +145,9 @@ if (!inventoryItem || quantity > inventoryItem.quantity) {
     res.json(user.cartItems);
   } catch (error) {
     console.error("Error updating cart:", error.message);
-    res.status(500).json({ message: "Failed to update cart", error: error.message });
+    res.status(500).json({
+      message: "Failed to update cart",
+      error: error.message,
+    });
   }
 };

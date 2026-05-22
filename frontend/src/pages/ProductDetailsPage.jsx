@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useProductStore } from "../stores/useProductStore";
 import { useCartStore } from "../stores/useCartStore";
+import toast from "react-hot-toast";
 
 const ProductDetailsPage = () => {
   const { id } = useParams();
@@ -29,11 +30,18 @@ const sizeOptionsByCategory = {
 const sizes = sizeOptionsByCategory[selectedProduct.category] || [];
 
   const handleAddToCart = () => {
-    addToCart({
-      ...selectedProduct,
-      selectedSize,
-    });
-  };
+  const finalSize = sizes.length > 0 ? selectedSize : "One Size";
+
+  if (!finalSize) {
+    toast.error("Please select a size");
+    return;
+  }
+
+  addToCart({
+    ...selectedProduct,
+    selectedSize: String(finalSize),
+  });
+};
 const allSoldOut = selectedProduct.inventory.every(
   (item) => item.quantity === 0
 );
@@ -60,7 +68,7 @@ const allSoldOut = selectedProduct.inventory.every(
             {selectedProduct.description}
           </p>
 
-          {sizes.length > 0 && (
+          {selectedProduct.inventory?.length > 0 && (
             <div className="mb-8">
               <h3 className="font-bold mb-4">Choose Size</h3>
 
@@ -69,7 +77,7 @@ const allSoldOut = selectedProduct.inventory.every(
     <button
       key={item.size}
       disabled={item.quantity === 0}
-      onClick={() => setSelectedSize(item.size)}
+      onClick={() => setSelectedSize(String(item.size))}
       className={`px-5 py-2 border ${
         item.quantity === 0
           ? "bg-gray-200 text-gray-400 cursor-not-allowed"

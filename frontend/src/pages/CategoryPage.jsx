@@ -5,15 +5,13 @@ import { motion } from "framer-motion";
 import ProductCard from "../components/ProductCard";
 
 const CategoryPage = () => {
-	const { fetchProductsByCategory, products } = useProductStore();
-
+	const { fetchProductsByCategory, products, loading } = useProductStore();
 	const { category } = useParams();
 
 	useEffect(() => {
 		fetchProductsByCategory(category);
 	}, [fetchProductsByCategory, category]);
 
-	console.log("products:", products);
 	return (
 		<div className='min-h-screen bg-[#F8F5F2] text-[#1A1A1A]'>
 			<div className='relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20'>
@@ -38,15 +36,22 @@ const CategoryPage = () => {
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.8, delay: 0.2 }}
 				>
-					{products?.length === 0 && (
+					{loading && (
+						<h2 className='text-2xl font-bold text-[#1A1A1A] uppercase tracking-wide text-center col-span-full bg-white border border-[#E5E0DA] shadow-sm rounded-md px-10 py-8'>
+							Loading products...
+						</h2>
+					)}
+
+					{!loading && products?.length === 0 && (
 						<h2 className='text-2xl font-bold text-[#1A1A1A] uppercase tracking-wide text-center col-span-full bg-white border border-[#E5E0DA] shadow-sm rounded-md px-10 py-8'>
 							No products found
 						</h2>
 					)}
 
-					{products?.map((product) => (
-						<ProductCard key={product._id} product={product} />
-					))}
+					{!loading &&
+						products?.map((product) => (
+							<ProductCard key={product._id} product={product} />
+						))}
 				</motion.div>
 			</div>
 		</div>

@@ -53,7 +53,10 @@ export const useCartStore = create((set, get) => ({
 			selectedSize: product.selectedSize,
 		});
 
-		toast.success("Product added to cart");
+		toast.success("Product added to cart", {
+  id: "add-to-cart",
+  duration: 1500,
+});
 
 		set((prevState) => {
 			const existingItem = prevState.cart.find(
@@ -76,23 +79,42 @@ export const useCartStore = create((set, get) => ({
 
 		get().calculateTotals();
 	} catch (error) {
-		toast.error(error.response?.data?.message || "An error occurred");
+		toast.error(error.response?.data?.message || "An error occurred", {
+  id: "cart-error",
+  duration: 1500,
+});
 	}
 },
-	removeFromCart: async (productId) => {
-		await axios.delete(`/cart`, { data: { productId } });
-		set((prevState) => ({ cart: prevState.cart.filter((item) => item._id !== productId) }));
-		get().calculateTotals();
-	},
-	updateQuantity: async (productId, quantity) => {
+	removeFromCart: async (productId, selectedSize) => {
+	await axios.delete(`/cart`, {
+		data: { productId, selectedSize },
+	});
+
+	set((prevState) => ({
+		cart: prevState.cart.filter(
+			(item) =>
+				!(
+					item._id === productId &&
+					item.selectedSize === selectedSize
+				)
+		),
+	}));
+
+	get().calculateTotals();
+},
+	updateQuantity: async (productId, selectedSize, quantity) => {
 		if (quantity === 0) {
 			get().removeFromCart(productId);
 			return;
 		}
 
-		await axios.put(`/cart/${productId}`, { quantity });
+		await axios.put(`/cart/${productId}`, { quantity, selectedSize });
 		set((prevState) => ({
-			cart: prevState.cart.map((item) => (item._id === productId ? { ...item, quantity } : item)),
+			cart: prevState.cart.map((item) =>
+	item._id === productId && item.selectedSize === selectedSize
+		? { ...item, quantity }
+		: item
+),
 		}));
 		get().calculateTotals();
 	},
