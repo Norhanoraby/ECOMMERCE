@@ -30,10 +30,15 @@ const userSchema = new mongoose.Schema(
           default: 1,
         },
         product: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Product",
-          required: true,
-        },
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "Product",
+  required: true,
+},
+
+selectedSize: {
+  type: String,
+  required: true,
+},
       },
     ],
     role: {

@@ -35,7 +35,7 @@ export const getFeaturedProducts = async (req, res) => {
 };
 export const createProduct = async (req, res) => {
     try {
-        const { name, description, price,image,category ,isFeatured} = req.body;
+        const { name, description, price,image,category ,isFeatured ,inventory} = req.body;
        // let cloudinaryResponse = null
         //if(image){
          //   cloudinaryResponse = await cloudinary.uploader.upload(image, { folder: "products" });
@@ -46,7 +46,8 @@ export const createProduct = async (req, res) => {
            price,
            image,
            category,
-           isFeatured
+           isFeatured,
+           inventory
        });
         res.status(201).json(product);
     } catch (error) {
@@ -128,3 +129,78 @@ async function updatefeaturedProductsCache() {
         console.log("Error updating featured products cache");
     }
 }
+
+export const getProductById = async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id);
+
+        if (!product) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+
+        res.json(product);
+    } catch (error) {
+        console.log("error in getProductById controller", error.message);
+        res.status(500).json({
+            message: "Server error",
+            error: error.message,
+        });
+    }
+}
+export const updateProductPrice = async (req, res) => {
+  try {
+    const { price } = req.body;
+
+    const product = await Product.findById(req.params.id);
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    product.price = price;
+
+    const updatedProduct = await product.save();
+
+    await updatefeaturedProductsCache();
+
+    res.json({ updatedProduct });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to update price",
+      error: error.message,
+    });
+  }
+};
+
+export const updateProductInventory = async (req, res) => {
+  try {
+    const { size, quantity } = req.body;
+
+    const product = await Product.findById(req.params.id);
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    const inventoryItem = product.inventory.find(
+      (item) => item.size === size
+    );
+
+    if (!inventoryItem) {
+      return res.status(404).json({ message: "Size not found" });
+    }
+
+    inventoryItem.quantity = quantity;
+
+    const updatedProduct = await product.save();
+
+    await updatefeaturedProductsCache();
+
+    res.json({ updatedProduct });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to update inventory",
+      error: error.message,
+    });
+  }
+};

@@ -7,6 +7,7 @@ import CategoryPage from "./pages/CategoryPage";
 import CartPage from "./pages/CartPage";
 import PurchaseSuccessPage from "./pages/PurchaseSuccessPage";
 import PurchaseCancelPage from "./pages/PurchaseCancelPage";
+import ProductDetailsPage from "./pages/ProductDetailsPage";
 
 
 import Navbar from "./components/Navbar";
@@ -56,7 +57,7 @@ if (checkingAuth) {
     <Route path='/cart' element={user ? <CartPage/> : <Navigate to="/login" />} />
     <Route path='/purchase-success'element={user ? <PurchaseSuccessPage /> : <Navigate to='/login' />}/>
 		<Route path='/purchase-cancel' element={user ? <PurchaseCancelPage /> : <Navigate to='/login' />} />
-
+    <Route path='/product/:id' element={<ProductDetailsPage />} />
    </Routes>
    </div>
    <Toaster/>

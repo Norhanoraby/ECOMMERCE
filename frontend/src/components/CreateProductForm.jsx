@@ -5,6 +5,16 @@ import { useProductStore } from "../stores/useProductStore";
 
 const categories = ["jeans", "blouse", "shoes", "watches", "purse", "dress"];
 
+const getSizesByCategory = (category) => {
+  const sizeMap = {
+    jeans: ["Small", "Medium", "Large"],
+    blouse: ["Small", "Medium", "Large"],
+    dress: ["Small", "Medium", "Large"],
+    shoes: ["37", "38", "39", "40", "41", "42"],
+  };
+
+  return sizeMap[category] || ["One Size"];
+};
 const CreateProductForm = () => {
   const [newProduct, setNewProduct] = useState({
     name: "",
@@ -12,6 +22,7 @@ const CreateProductForm = () => {
     price: "",
     category: "",
     image: "",
+    inventory: [],
   });
 
   const { createProduct, loading } = useProductStore();
@@ -27,6 +38,7 @@ const CreateProductForm = () => {
         price: "",
         category: "",
         image: "",
+        inventory: [],
       });
     } catch {
       console.log("error creating a product");
@@ -138,9 +150,19 @@ const CreateProductForm = () => {
             id="category"
             name="category"
             value={newProduct.category}
-            onChange={(e) =>
-              setNewProduct({ ...newProduct, category: e.target.value })
-            }
+            onChange={(e) => {
+  const category = e.target.value;
+  const sizes = getSizesByCategory(category);
+
+  setNewProduct({
+    ...newProduct,
+    category,
+    inventory: sizes.map((size) => ({
+      size,
+      quantity: 0,
+    })),
+  });
+}}
             className="mt-2 block w-full bg-white border border-[#E5E0DA] px-3 py-3 text-[#1A1A1A] focus:outline-none focus:border-black sm:text-sm"
             required
           >
@@ -153,6 +175,39 @@ const CreateProductForm = () => {
             ))}
           </select>
         </div>
+        {newProduct.inventory.length > 0 && (
+  <div>
+    <label className="block text-xs font-semibold text-[#6B6B6B] uppercase tracking-widest">
+      Available Sizes & Quantity
+    </label>
+
+    <div className="mt-3 space-y-3">
+      {newProduct.inventory.map((item, index) => (
+        <div key={item.size} className="flex items-center gap-3">
+          <span className="w-24 font-semibold">{item.size}</span>
+
+          <input
+            type="number"
+            min="0"
+            value={item.quantity}
+            onChange={(e) => {
+              const updatedInventory = [...newProduct.inventory];
+              updatedInventory[index].quantity = Number(e.target.value);
+
+              setNewProduct({
+                ...newProduct,
+                inventory: updatedInventory,
+              });
+            }}
+            className="w-full bg-white border border-[#E5E0DA] px-3 py-2"
+            placeholder="Quantity"
+            required
+          />
+        </div>
+      ))}
+    </div>
+  </div>
+)}
 
         <div>
           <label className="block text-xs font-semibold text-[#6B6B6B] uppercase tracking-widest mb-2">

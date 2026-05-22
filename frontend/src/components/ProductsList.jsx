@@ -1,15 +1,23 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Trash, Star } from "lucide-react";
 import { useProductStore } from "../stores/useProductStore";
 
 const ProductsList = () => {
-  const { deleteProduct, toggleFeaturedProduct, products } = useProductStore();
+  const {
+    deleteProduct,
+    toggleFeaturedProduct,
+    products,
+    updateProductPrice,
+    updateProductInventory,
+  } = useProductStore();
 
-  console.log("products", products);
+  const [editedPrices, setEditedPrices] = useState({});
+  const [editedInventory, setEditedInventory] = useState({});
 
   return (
     <motion.div
-      className="bg-white border border-[#E5E0DA] shadow-sm rounded-md overflow-hidden max-w-5xl mx-auto"
+      className="bg-white border border-[#E5E0DA] shadow-sm rounded-md overflow-hidden max-w-6xl mx-auto"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
@@ -19,7 +27,7 @@ const ProductsList = () => {
           Products List
         </h2>
         <p className="mt-2 text-sm text-[#6B6B6B]">
-          View, feature, and delete products from your store.
+          View, feature, edit price, update stock, and delete products.
         </p>
       </div>
 
@@ -27,38 +35,22 @@ const ProductsList = () => {
         <table className="min-w-full divide-y divide-[#E5E0DA]">
           <thead className="bg-[#F8F5F2]">
             <tr>
-              <th
-                scope="col"
-                className="px-6 py-4 text-left text-xs font-bold text-[#6B6B6B] uppercase tracking-widest"
-              >
+              <th className="px-6 py-4 text-left text-xs font-bold text-[#6B6B6B] uppercase tracking-widest">
                 Product
               </th>
-
-              <th
-                scope="col"
-                className="px-6 py-4 text-left text-xs font-bold text-[#6B6B6B] uppercase tracking-widest"
-              >
+              <th className="px-6 py-4 text-left text-xs font-bold text-[#6B6B6B] uppercase tracking-widest">
                 Price
               </th>
-
-              <th
-                scope="col"
-                className="px-6 py-4 text-left text-xs font-bold text-[#6B6B6B] uppercase tracking-widest"
-              >
+              <th className="px-6 py-4 text-left text-xs font-bold text-[#6B6B6B] uppercase tracking-widest">
                 Category
               </th>
-
-              <th
-                scope="col"
-                className="px-6 py-4 text-left text-xs font-bold text-[#6B6B6B] uppercase tracking-widest"
-              >
+              <th className="px-6 py-4 text-left text-xs font-bold text-[#6B6B6B] uppercase tracking-widest">
                 Featured
               </th>
-
-              <th
-                scope="col"
-                className="px-6 py-4 text-left text-xs font-bold text-[#6B6B6B] uppercase tracking-widest"
-              >
+              <th className="px-6 py-4 text-left text-xs font-bold text-[#6B6B6B] uppercase tracking-widest">
+                Inventory
+              </th>
+              <th className="px-6 py-4 text-left text-xs font-bold text-[#6B6B6B] uppercase tracking-widest">
                 Actions
               </th>
             </tr>
@@ -72,26 +64,41 @@ const ProductsList = () => {
               >
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
-                    <div className="flex-shrink-0 h-12 w-12">
-                      <img
-                        className="h-12 w-12 rounded-md object-cover border border-[#E5E0DA]"
-                        src={product.image}
-                        alt={product.name}
-                      />
-                    </div>
-
-                    <div className="ml-4">
-                      <div className="text-sm font-semibold text-[#1A1A1A]">
-                        {product.name}
-                      </div>
+                    <img
+                      className="h-12 w-12 rounded-md object-cover border border-[#E5E0DA]"
+                      src={product.image}
+                      alt={product.name}
+                    />
+                    <div className="ml-4 text-sm font-semibold text-[#1A1A1A]">
+                      {product.name}
                     </div>
                   </div>
                 </td>
 
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-[#1A1A1A]">
-                    EGP {product.price.toFixed(2)}
-                  </div>
+                  <input
+                    type="number"
+                    value={editedPrices[product._id] ?? product.price}
+                    onChange={(e) =>
+                      setEditedPrices({
+                        ...editedPrices,
+                        [product._id]: e.target.value,
+                      })
+                    }
+                    className="w-24 border px-2 py-1"
+                  />
+
+                  <button
+                    onClick={() =>
+                      updateProductPrice(
+                        product._id,
+                        editedPrices[product._id] ?? product.price
+                      )
+                    }
+                    className="ml-2 bg-black text-white px-3 py-1 text-xs"
+                  >
+                    Save
+                  </button>
                 </td>
 
                 <td className="px-6 py-4 whitespace-nowrap">
@@ -117,6 +124,48 @@ const ProductsList = () => {
                   </button>
                 </td>
 
+                <td className="px-6 py-4">
+                  <div className="space-y-2">
+                    {product.inventory?.map((item) => {
+                      const key = `${product._id}-${item.size}`;
+
+                      return (
+                        <div key={item.size} className="flex items-center gap-2">
+                          <span className="w-20 text-sm font-semibold">
+                            {item.size}
+                          </span>
+
+                          <input
+                            type="number"
+                            min="0"
+                            value={editedInventory[key] ?? item.quantity}
+                            onChange={(e) =>
+                              setEditedInventory({
+                                ...editedInventory,
+                                [key]: e.target.value,
+                              })
+                            }
+                            className="w-20 border px-2 py-1"
+                          />
+
+                          <button
+                            onClick={() =>
+                              updateProductInventory(
+                                product._id,
+                                item.size,
+                                editedInventory[key] ?? item.quantity
+                              )
+                            }
+                            className="bg-black text-white px-3 py-1 text-xs"
+                          >
+                            Save
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </td>
+
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button
                     onClick={() => deleteProduct(product._id)}
@@ -131,7 +180,7 @@ const ProductsList = () => {
             {products?.length === 0 && (
               <tr>
                 <td
-                  colSpan="5"
+                  colSpan="6"
                   className="px-6 py-10 text-center text-sm text-[#6B6B6B]"
                 >
                   No products found.

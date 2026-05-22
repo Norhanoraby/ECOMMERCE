@@ -12,9 +12,10 @@ export const getCartProducts = async (req, res) => {
       );
 
       return {
-        ...product.toJSON(),
-        quantity: item.quantity,
-      };
+  ...product.toJSON(),
+  quantity: item.quantity,
+  selectedSize: item.selectedSize,
+};
     });
 
     res.json(cartItems);
@@ -26,20 +27,46 @@ export const getCartProducts = async (req, res) => {
 
 export const addToCart = async (req, res) => {
   try {
-    const { productId } = req.body;
+    const { productId, selectedSize } = req.body;
     const user = req.user;
+const product = await Product.findById(productId);
 
+if (!product) {
+  return res.status(404).json({
+    message: "Product not found",
+  });
+}
+
+const inventoryItem = product.inventory.find(
+  (item) => item.size === selectedSize
+);
+
+if (!inventoryItem || inventoryItem.quantity <= 0) {
+  return res.status(400).json({
+    message: "This size is sold out",
+  });
+}
     const existingItem = user.cartItems.find(
-      (item) => item.product.toString() === productId
-    );
+  (item) =>
+    item.product.toString() === productId &&
+    item.selectedSize === selectedSize
+);
 
     if (existingItem) {
-      existingItem.quantity += 1;
-    } else {
+  if (existingItem.quantity + 1 > inventoryItem.quantity) {
+    return res.status(400).json({
+      message: `Only ${inventoryItem.quantity} available for this size`,
+    });
+  }
+
+  existingItem.quantity += 1;
+}
+else {
       user.cartItems.push({
-        product: productId,
-        quantity: 1,
-      });
+  product: productId,
+  quantity: 1,
+  selectedSize,
+});
     }
 
     await user.save();
@@ -77,7 +104,8 @@ export const updateQuantity = async (req, res) => {
     const user = req.user;
 
     const existingItem = user.cartItems.find(
-      (item) => item.product.toString() === productId
+      (item) => item.product.toString() === productId &&
+      item.selectedSize === selectedSize
     );
 
     if (!existingItem) {
@@ -89,6 +117,17 @@ export const updateQuantity = async (req, res) => {
         (item) => item.product.toString() !== productId
       );
     } else {
+      const product = await Product.findById(productId);
+
+const inventoryItem = product.inventory.find(
+  (item) => item.size === existingItem.selectedSize
+);
+
+if (!inventoryItem || quantity > inventoryItem.quantity) {
+  return res.status(400).json({
+    message: `Only ${inventoryItem?.quantity || 0} available for this size`,
+  });
+}
       existingItem.quantity = quantity;
     }
 

@@ -24,6 +24,10 @@ const orderSchema = new mongoose.Schema(
 					required: true,
 					min: 0,
 				},
+				selectedSize: {
+  type: String,
+  required: true,
+},
 			},
 		],
 		totalAmount: {
