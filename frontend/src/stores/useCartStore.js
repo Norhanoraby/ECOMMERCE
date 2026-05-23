@@ -47,43 +47,51 @@ export const useCartStore = create((set, get) => ({
 		set({ cart: [], coupon: null, total: 0, subtotal: 0 });
 	},
 	addToCart: async (product) => {
-	try {
-		await axios.post("/cart", {
-			productId: product._id,
-			selectedSize: product.selectedSize,
-		});
+  try {
+    await axios.post("/cart", {
+      productId: product._id,
+      selectedSize: product.selectedSize,
+    });
 
-		toast.success("Product added to cart", {
-  id: "add-to-cart",
-  duration: 1500,
-});
+    toast.success("Product added to cart", {
+      id: "add-to-cart",
+      duration: 1500,
+    });
 
-		set((prevState) => {
-			const existingItem = prevState.cart.find(
-				(item) =>
-					item._id === product._id &&
-					item.selectedSize === product.selectedSize
-			);
+    set((prevState) => {
+      const existingItem = prevState.cart.find(
+        (item) =>
+          item._id === product._id &&
+          item.selectedSize === product.selectedSize
+      );
 
-			const newCart = existingItem
-				? prevState.cart.map((item) =>
-						item._id === product._id &&
-						item.selectedSize === product.selectedSize
-							? { ...item, quantity: item.quantity + 1 }
-							: item
-				  )
-				: [...prevState.cart, { ...product, quantity: 1 }];
+      const newCart = existingItem
+        ? prevState.cart.map((item) =>
+            item._id === product._id &&
+            item.selectedSize === product.selectedSize
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          )
+        : [...prevState.cart, { ...product, quantity: 1 }];
 
-			return { cart: newCart };
-		});
+      return { cart: newCart };
+    });
 
-		get().calculateTotals();
-	} catch (error) {
-		toast.error(error.response?.data?.message || "An error occurred", {
-  id: "cart-error",
-  duration: 1500,
-});
-	}
+    get().calculateTotals();
+  } catch (error) {
+    if (error.response?.status === 401) {
+      toast.error("Please login or sign up to add items to your cart", {
+        id: "login-required",
+        duration: 2000,
+      });
+      return;
+    }
+
+    toast.error(error.response?.data?.message || "An error occurred", {
+      id: "cart-error",
+      duration: 1500,
+    });
+  }
 },
 	removeFromCart: async (productId, selectedSize) => {
 	await axios.delete(`/cart`, {
