@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { LogIn, Mail, Lock, ArrowRight, Loader } from "lucide-react";
+import { LogIn, Mail, Lock, ArrowRight, Loader, Eye, EyeOff } from "lucide-react";
 import { useUserStore } from "../stores/useUserStore";
 
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
    const {login,loading} = useUserStore();
 
@@ -80,7 +81,7 @@ const LoginPage = () => {
 
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -91,22 +92,16 @@ const LoginPage = () => {
             </div>
 
             <button
-              type="submit"
-              className="w-full flex justify-center py-3 px-4 border border-black text-sm font-bold uppercase tracking-widest text-white bg-black hover:bg-[#333333] transition duration-200 disabled:opacity-50"
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <Loader className="mr-2 h-5 w-5 animate-spin" aria-hidden="true" />
-                  Loading...
-                </>
-              ) : (
-                <>
-                  <LogIn className="mr-2 h-5 w-5" aria-hidden="true" />
-                  Login
-                </>
-              )}
-            </button>
+  type="button"
+  onClick={() => setShowPassword(!showPassword)}
+  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+>
+  {showPassword ? (
+    <EyeOff className="h-5 w-5 text-[#9CA3AF]" />
+  ) : (
+    <Eye className="h-5 w-5 text-[#9CA3AF]" />
+  )}
+</button>
           </form>
 
           <p className="mt-8 text-center text-sm text-[#6B6B6B]">

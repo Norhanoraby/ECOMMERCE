@@ -8,21 +8,50 @@ export const useUserStore = create((set, get) => ({
 	checkingAuth: true,
 
 	signup: async ({ name, email, password, confirmPassword }) => {
-		set({ loading: true });
+  set({ loading: true });
 
-		if (password !== confirmPassword) {
-			set({ loading: false });
-			return toast.error("Passwords do not match");
-		}
+  if (password !== confirmPassword) {
+    set({ loading: false });
+    return toast.error("Passwords do not match");
+  }
 
-		try {
-			const res = await axios.post("/auth/signup", { name, email, password });
-			set({ user: res.data, loading: false });
-		} catch (error) {
-			set({ loading: false });
-			toast.error(error.response.data.message || "An error occurred");
-		}
-	},
+  const passwordErrors = [];
+
+  if (password.length < 8) {
+    passwordErrors.push("at least 8 characters");
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    passwordErrors.push("one uppercase letter");
+  }
+
+  if (!/[a-z]/.test(password)) {
+    passwordErrors.push("one lowercase letter");
+  }
+
+  if (!/[0-9]/.test(password)) {
+    passwordErrors.push("one number");
+  }
+
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    passwordErrors.push("one special character");
+  }
+
+  if (passwordErrors.length > 0) {
+    set({ loading: false });
+    return toast.error(
+      `Password must include ${passwordErrors.join(", ")}`
+    );
+  }
+
+  try {
+    const res = await axios.post("/auth/signup", { name, email, password });
+    set({ user: res.data, loading: false });
+  } catch (error) {
+    set({ loading: false });
+    toast.error(error.response?.data?.message || "An error occurred");
+  }
+},
 	login: async (email, password) => {
 		set({ loading: true });
 
@@ -32,7 +61,7 @@ export const useUserStore = create((set, get) => ({
 			set({ user: res.data, loading: false });
 		} catch (error) {
 			set({ loading: false });
-			toast.error(error.response.data.message || "An error occurred");
+			toast.error(error.response?.data?.message || "An error occurred");
 		}
 	},
 

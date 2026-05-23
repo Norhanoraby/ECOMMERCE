@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { UserPlus, Mail, Lock, User, ArrowRight, Loader } from "lucide-react";
+import { UserPlus, Mail, Lock, User, ArrowRight, Loader , Eye, EyeOff} from "lucide-react";
 import { motion } from "framer-motion";
 import { useUserStore } from "../stores/useUserStore";
 
@@ -12,6 +12,9 @@ const SignUpPage = () => {
     password: "",
     confirmPassword: "",
   });
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {signup,loading} = useUserStore();
 
@@ -113,7 +116,7 @@ const SignUpPage = () => {
 
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
                   value={formData.password}
                   onChange={(e) =>
@@ -122,6 +125,17 @@ const SignUpPage = () => {
                   className="block w-full px-3 py-3 pl-10 bg-white border border-[#E5E0DA] text-[#1A1A1A] placeholder-[#9CA3AF] focus:outline-none focus:border-black sm:text-sm"
                   placeholder="••••••••"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5 text-[#9CA3AF]" />
+                  ) : (
+                    <Eye className="h-5 w-5 text-[#9CA3AF]" />
+                  )}
+                </button>
               </div>
             </div>
 

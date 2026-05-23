@@ -8,12 +8,13 @@ import CartPage from "./pages/CartPage";
 import PurchaseSuccessPage from "./pages/PurchaseSuccessPage";
 import PurchaseCancelPage from "./pages/PurchaseCancelPage";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
+import Footer from "./components/Footer";
 
 
 import Navbar from "./components/Navbar";
 import { Toaster } from "react-hot-toast";
 import { useUserStore } from "./stores/useUserStore";
-import { use, useEffect } from "react";
+import { useEffect } from "react";
 import { useCartStore } from "./stores/useCartStore";
 
 
@@ -59,6 +60,7 @@ if (checkingAuth) {
 		<Route path='/purchase-cancel' element={user ? <PurchaseCancelPage /> : <Navigate to='/login' />} />
     <Route path='/product/:id' element={<ProductDetailsPage />} />
    </Routes>
+   <Footer />
    </div>
    <Toaster/>
    </div>
