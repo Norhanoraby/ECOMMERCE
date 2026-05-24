@@ -102,6 +102,23 @@ const LoginPage = () => {
     <Eye className="h-5 w-5 text-[#9CA3AF]" />
   )}
 </button>
+  <button
+              type="submit"
+              className="w-full flex justify-center py-3 px-4 border border-black text-sm font-bold uppercase tracking-widest text-white bg-black hover:bg-[#333333] transition duration-200 disabled:opacity-50"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Loader className="mr-2 h-5 w-5 animate-spin" aria-hidden="true" />
+                  Loading...
+                </>
+              ) : (
+                <>
+                  <LogIn className="mr-2 h-5 w-5" aria-hidden="true" />
+                  Login
+                </>
+              )}
+            </button>
           </form>
 
           <p className="mt-8 text-center text-sm text-[#6B6B6B]">
