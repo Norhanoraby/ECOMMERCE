@@ -4,13 +4,13 @@ import { useProductStore } from "../stores/useProductStore";
 import FeaturedProducts from "../components/FeaturedProducts";
 
 const categories = [
-	{ href: "/jeans", name: "Jeans", imageUrl: "/jeans.jpg" },
-	{ href: "/blouse", name: "blouse", imageUrl: "/blouse.jpg" },
-	{ href: "/shoes", name: "Shoes", imageUrl: "/shoes.jpg" },
-	{ href: "/watches", name: "watches", imageUrl: "/watches.jpg" },
-	{ href: "/purse", name: "purse", imageUrl: "/purse1.jpg" },
-	{ href: "/dress", name: "dress", imageUrl: "/dress.jpg" },
-  ];
+	{ href: "/jeans", name: "Jeans", imageUrl: "https://res.cloudinary.com/dfxlqthrs/image/upload/v1779817100/jeans_uklzto.jpg" },
+	{ href: "/blouse", name: "blouse", imageUrl: "https://res.cloudinary.com/dfxlqthrs/image/upload/v1779817076/blouse_pn8rsz.jpg" },
+	{ href: "/shoes", name: "Shoes", imageUrl: "https://res.cloudinary.com/dfxlqthrs/image/upload/v1779817137/shoes_osdaqb.jpg" },
+	{ href: "/watches", name: "watches", imageUrl: "https://res.cloudinary.com/dfxlqthrs/image/upload/v1779817146/watches_ablkt2.jpg" },
+	{ href: "/purse", name: "purse", imageUrl: "https://res.cloudinary.com/dfxlqthrs/image/upload/v1779817117/purse1_hkr5nl.jpg" },
+	{ href: "/dress", name: "dress", imageUrl: "https://res.cloudinary.com/dfxlqthrs/image/upload/v1779817090/dress_zykbew.jpg" },
+];
 function HomePage() {
 	const {
 	fetchFeaturedProducts,
