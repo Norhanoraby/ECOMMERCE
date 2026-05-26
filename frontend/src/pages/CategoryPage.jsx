@@ -5,12 +5,20 @@ import { motion } from "framer-motion";
 import ProductCard from "../components/ProductCard";
 
 const CategoryPage = () => {
-	const { fetchProductsByCategory, products, loading } = useProductStore();
+	const {
+		fetchProductsByCategory,
+		categoryProducts,
+		categoryLoading,
+		loadedCategory,
+	} = useProductStore();
+
 	const { category } = useParams();
 
 	useEffect(() => {
 		fetchProductsByCategory(category);
 	}, [fetchProductsByCategory, category]);
+
+	const isCorrectCategoryLoaded = loadedCategory === category;
 
 	return (
 		<div className='min-h-screen bg-[#F8F5F2] text-[#1A1A1A]'>
@@ -36,20 +44,23 @@ const CategoryPage = () => {
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.8, delay: 0.2 }}
 				>
-					{loading && (
+					{(categoryLoading || !isCorrectCategoryLoaded) && (
 						<h2 className='text-2xl font-bold text-[#1A1A1A] uppercase tracking-wide text-center col-span-full bg-white border border-[#E5E0DA] shadow-sm rounded-md px-10 py-8'>
 							Loading products...
 						</h2>
 					)}
 
-					{!loading && products?.length === 0 && (
-						<h2 className='text-2xl font-bold text-[#1A1A1A] uppercase tracking-wide text-center col-span-full bg-white border border-[#E5E0DA] shadow-sm rounded-md px-10 py-8'>
-							No products found
-						</h2>
-					)}
+					{!categoryLoading &&
+						isCorrectCategoryLoaded &&
+						categoryProducts?.length === 0 && (
+							<h2 className='text-2xl font-bold text-[#1A1A1A] uppercase tracking-wide text-center col-span-full bg-white border border-[#E5E0DA] shadow-sm rounded-md px-10 py-8'>
+								No products found
+							</h2>
+						)}
 
-					{!loading &&
-						products?.map((product) => (
+					{!categoryLoading &&
+						isCorrectCategoryLoaded &&
+						categoryProducts?.map((product) => (
 							<ProductCard key={product._id} product={product} />
 						))}
 				</motion.div>

@@ -12,8 +12,11 @@ const categories = [
 	{ href: "/dress", name: "dress", imageUrl: "/dress.jpg" },
   ];
 function HomePage() {
-	const { fetchFeaturedProducts, products, isloading } = useProductStore();
-
+	const {
+	fetchFeaturedProducts,
+	featuredProducts,
+	featuredLoading,
+} = useProductStore();
     useEffect(() => {
         fetchFeaturedProducts();
     }, [fetchFeaturedProducts]);
@@ -32,7 +35,9 @@ function HomePage() {
 						<CategoryItem category={category} key={category.name} />
 					))}
 				</div>
-        {!isloading && products.length > 0 && <FeaturedProducts featuredProducts={products} />}
+        {!featuredLoading && featuredProducts.length > 0 && (
+  <FeaturedProducts featuredProducts={featuredProducts} />
+)}
     </div>
   );
 };

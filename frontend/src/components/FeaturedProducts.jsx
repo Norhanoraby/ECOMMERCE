@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
-import { ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react";
-import { useCartStore } from "../stores/useCartStore";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 
 const FeaturedProducts = ({ featuredProducts }) => {
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [itemsPerPage, setItemsPerPage] = useState(4);
 
-	const { addToCart } = useCartStore();
 
 	useEffect(() => {
 		const handleResize = () => {
@@ -58,14 +57,12 @@ const FeaturedProducts = ({ featuredProducts }) => {
 											<p className='text-emerald-300 font-medium mb-4'>
 												${product.price.toFixed(2)}
 											</p>
-											<button
-												onClick={() => addToCart(product)}
-												className='w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-2 px-4 rounded transition-colors duration-300 
-												flex items-center justify-center'
-											>
-												<ShoppingCart className='w-5 h-5 mr-2' />
-												Add to Cart
-											</button>
+											<Link
+  to={`/product/${product._id}`}
+  className="w-full bg-black text-white font-semibold py-2 px-4 rounded transition-colors duration-300 flex items-center justify-center"
+>
+  View Details
+</Link>
 										</div>
 									</div>
 								</div>
