@@ -10,6 +10,11 @@ const PurchaseSuccessPage = () => {
 	const { clearCart } = useCartStore();
 	const [error, setError] = useState(null);
 
+	 const orderNumber = new URLSearchParams(window.location.search)
+    .get("session_id")
+    ?.replace(/\D/g, "")
+    .slice(-6);
+
 	useEffect(() => {
 		const handleCheckoutSuccess = async (sessionId) => {
 			try {
@@ -66,7 +71,9 @@ const PurchaseSuccessPage = () => {
 					<div className='bg-gray-700 rounded-lg p-4 mb-6'>
 						<div className='flex items-center justify-between mb-2'>
 							<span className='text-sm text-gray-400'>Order number</span>
-							<span className='text-sm font-semibold text-emerald-400'>#12345</span>
+							<span className='text-sm font-semibold text-emerald-400'>
+       						#{orderNumber || Math.floor(100000 + Math.random() * 900000)}
+							</span>
 						</div>
 						<div className='flex items-center justify-between'>
 							<span className='text-sm text-gray-400'>Estimated delivery</span>

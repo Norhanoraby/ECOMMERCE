@@ -27,7 +27,7 @@ export const createCheckoutSession = async (req, res) => {
 
       return {
         price_data: {
-          currency: "usd",
+          currency: "egp",
           product_data: {
             name: `${product.name} - ${product.selectedSize}`,
             images: [safeImage(product.image)],
@@ -53,6 +53,19 @@ export const createCheckoutSession = async (req, res) => {
         );
       }
     }
+    const newOrder = new Order({
+     user: req.user._id,
+     products: products.map((product) => ({
+     product: product._id,
+     quantity: product.quantity,
+     price: product.price,
+     selectedSize: product.selectedSize,
+      })),
+       totalAmount: totalAmount / 100,
+       stripeSessionId: null,
+      });
+
+await newOrder.save();
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -70,20 +83,16 @@ export const createCheckoutSession = async (req, res) => {
       metadata: {
         userId: req.user._id.toString(),
         couponCode: couponCode || "",
-        products: JSON.stringify(
-          products.map((p) => ({
-            id: p._id,
-            quantity: p.quantity,
-            price: p.price,
-            selectedSize: p.selectedSize,
-          }))
-        ),
+        orderId: newOrder._id.toString(),
       },
     });
 
     if (totalAmount >= 1000000) {
       await createNewCoupon(req.user._id);
     }
+
+    newOrder.stripeSessionId = session.id;
+    await newOrder.save();
 
     res.status(200).json({
       id: session.id,
@@ -117,11 +126,16 @@ export const checkoutSuccess = async (req, res) => {
         );
       }
 
-      const products = JSON.parse(session.metadata.products);
+      const order = await Order.findById(session.metadata.orderId);
+
+     if (!order) {
+     return res.status(404).json({ message: "Order not found" });
+     }
+
+      const products = order.products;
 
       for (const item of products) {
-        const product = await Product.findById(item.id);
-
+        const product = await Product.findById(item.product);
         if (!product) continue;
 
         const inventoryItem = product.inventory.find(
@@ -138,19 +152,9 @@ export const checkoutSuccess = async (req, res) => {
         await product.save();
       }
 
-      const newOrder = new Order({
-        user: session.metadata.userId,
-        products: products.map((product) => ({
-          product: product.id,
-          quantity: product.quantity,
-          price: product.price,
-          selectedSize: product.selectedSize,
-        })),
-        totalAmount: session.amount_total / 100,
-        stripeSessionId: sessionId,
-      });
-
-      await newOrder.save();
+      order.stripeSessionId = sessionId;
+      order.totalAmount = session.amount_total / 100;
+      await order.save();
 
       await User.findByIdAndUpdate(session.metadata.userId, {
         cartItems: [],
@@ -159,7 +163,7 @@ export const checkoutSuccess = async (req, res) => {
       res.status(200).json({
         success: true,
         message: "Payment successful, order created, stock updated.",
-        orderId: newOrder._id,
+        orderId: order._id,
       });
     }
   } catch (error) {

@@ -37,7 +37,6 @@ const orderSchema = new mongoose.Schema(
 		},
 		stripeSessionId: {
 			type: String,
-			unique: true,
 		},
 	},
 	{ timestamps: true }
